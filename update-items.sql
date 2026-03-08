@@ -1,0 +1,3 @@
+ALTER TABLE items ADD COLUMN location TEXT;
+ALTER TABLE items ADD COLUMN unit TEXT DEFAULT '個';
+ALTER TABLE items ADD COLUMN image_url TEXT;

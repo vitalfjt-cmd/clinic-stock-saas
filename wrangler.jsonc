@@ -1,0 +1,20 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "clinic-stock-saas",
+	"main": "src/index.ts",
+	"compatibility_date": "2026-02-28",
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "clinic-db",
+			"database_id": "c1d2238e-30c3-403f-ba2d-2f26120a3158"
+		}
+	],
+	"r2_buckets": [
+		{
+			"bucket_name": "clinic-stock-images",
+			"binding": "clinic_stock_images",
+			"remote": true
+		}
+	]
+}
