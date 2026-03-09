@@ -6,6 +6,8 @@ import type { AppEnv } from './types'
 import masterRoutes from './routes/master'
 import stockRoutes from './routes/stock'
 
+import { clerkMiddleware, getAuth } from '@hono/clerk-auth'
+
 const app = new Hono<AppEnv>()
 
 // ==========================================
@@ -18,11 +20,20 @@ app.use('/api/*', cors({
 }))
 
 // ==========================================
-// ② テナントIDの固定（認証本格導入までは t-001 に固定）
+// ② Clerk認証 & テナントID（Organization ID）の動的取得
 // ==========================================
+app.use('/api/*', clerkMiddleware())
+
 app.use('/api/*', async (c, next) => {
-  // すべてのAPIリクエストに 't-001' をセットして、分割先のファイルに渡す
-  c.set('tenantId', 't-001');
+  const auth = getAuth(c)
+  
+  // Organization ID が取得できない場合は 401 Unauthorized を返す
+  if (!auth?.orgId) {
+    return c.json({ error: 'Unauthorized: No Organization selected' }, 401)
+  }
+
+  // ClerkのOrganization IDをテナントIDとしてセットして後続の処理へ渡す
+  c.set('tenantId', auth.orgId);
   await next();
 });
 
