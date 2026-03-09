@@ -45,16 +45,16 @@ const uploadHandler = async (c: any) => {
     const ext = safeName.includes('.') ? safeName.split('.').pop() : 'jpg';
     const fileName = `${(globalThis as any).crypto.randomUUID()}.${ext}`;
 
-    // バッファとして読み込み、空ファイルでないかチェック
-    const buffer = await file.arrayBuffer();
-    if (buffer.byteLength === 0) {
+// 空ファイルでないかサイズでチェック
+    if (file.size === 0) {
       return c.json({ error: 'File is empty' }, 400);
     }
 
     // 画像の種類を明示的に指定
     const contentType = file.type || 'image/jpeg';
-
-    await c.env.clinic_stock_images.put(fileName, buffer, {
+    
+    // buffer に変換せず、file (Blob) をそのままR2に渡す（エラー回避のため）
+    await c.env.clinic_stock_images.put(fileName, file, {
       httpMetadata: { contentType: contentType }
     });
 
