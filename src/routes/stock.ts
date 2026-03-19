@@ -46,7 +46,9 @@ app.put('/lots/:id', async (c) => {
   const id = c.req.param('id');
   const body = await c.req.json();
   try {
-    await c.env.DB.prepare(`UPDATE stock_lots SET lot_number = ? WHERE id = ? AND tenant_id = ?`).bind(body.lotNumber, id, currentTenant).run();
+    // ★ expiry_date も同時に更新するようにSQLとbindを追加
+    await c.env.DB.prepare(`UPDATE stock_lots SET expiry_date = ?, lot_number = ? WHERE id = ? AND tenant_id = ?`)
+      .bind(body.expiryDate, body.lotNumber || null, id, currentTenant).run();
     return c.json({ message: 'Lot updated' }, 200);
   } catch (e: any) { return c.json({ error: e.message }, 500); }
 });
